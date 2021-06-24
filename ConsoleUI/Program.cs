@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +11,21 @@ namespace ConsoleUI
 {
     class Program
     {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Welcome to the Party!!");
+            GetUserInfo();
+            PrintGuestsName();
+            Thread.Sleep(2000);
+            Animate();
+            PrintGuestsName();
+            PrintWinner();
+
+
+
+        }
+
+        //Start writing your code here
         //variables
         private static Dictionary<int, string> guests = new Dictionary<int, string>();
 
@@ -63,12 +80,12 @@ namespace ConsoleUI
             do
             {
                 raffleName = GetUserInput("Please enter your name:  ");
-                yesOrNo = GetUserInput("Do you want to add another name? (y or n)  ").ToLower();
+                yesOrNo = GetUserInput("Do you want to add another name?  ").ToLower();
                 nameToAdd = raffleName;
                 raffleNumber = GenerateRandomNumber();
                 AddGuestsInRaffle(raffleNumber, nameToAdd);
 
-                if (yesOrNo == "y") continue;
+                if (yesOrNo == "yes") continue;
 
                 else if (yesOrNo == "")
                 {
@@ -85,7 +102,7 @@ namespace ConsoleUI
                     AddGuestsInRaffle(raffleNumber, nameToAdd);
                 }
 
-                else if (yesOrNo == "n") break;
+                else if (yesOrNo == "no") break;
 
                 else
                 {
@@ -95,7 +112,7 @@ namespace ConsoleUI
                 }
 
             }
-            while (yesOrNo == "y");
+            while (yesOrNo == "yes");
         }
 
         /*3. Create a method that return an integer and name it GenerateRandomNumber().
@@ -119,10 +136,12 @@ namespace ConsoleUI
          * i. Use a loop to print the name of all your guests with their assigned raffleNumber.*/
         static void PrintGuestsName()
         {
+            Console.WriteLine();
             foreach (KeyValuePair<int, string> kvp in guests)
             {
-                Console.WriteLine($"{kvp.Value} : {kvp.Key}");
+                Console.WriteLine($"{kvp.Value}'s number is **{kvp.Key}**");
             }
+            Console.WriteLine();
         }
 
         /*6. Create a method and call it GetRaffleNumber(). This method should take a
@@ -152,78 +171,71 @@ namespace ConsoleUI
                 if (winnerNumber == kvp.Key)
                 {
                     string winnerName = kvp.Value;
-                    Console.WriteLine($"The Winner is: {winnerName} with" +
-                        $" the #{winnerNumber}");
+                    Console.WriteLine($"The Winner is: **{winnerName}** with" +
+                        $" the **#{winnerNumber}**");
                 }
 
         }
 
 
 
-        static void Main(string[] args)
+
+        // CREDIT for animation: http://newbcoding.blogspot.com/2014/11/drawing-and-animating-ascii-art-in-c.html
+        // CREDIT for ASCII: https://ascii.co.uk/art/steelers
+        static void ConsoleDraw(IEnumerable<string> lines, int x, int y)
         {
-            Console.WriteLine("Welcome to the Party!!");
-            GetUserInfo();
-            Thread.Sleep(2000);
-            MultiLineAnimation();
-            PrintGuestsName();
-            PrintWinner();
+            if (x > Console.WindowWidth) return;
+            if (y > Console.WindowHeight) return;
 
-        }
+            var trimLeft = x < 0 ? -x : 0;
+            int index = y;
 
-        //Start writing your code here
+            x = x < 0 ? 0 : x;
+            y = y < 0 ? 0 : y;
 
-
-
-
-
-
-        static void MultiLineAnimation() // Credit: https://www.michalbialecki.com/2018/05/25/how-to-make-you-console-app-look-cool/
-        {
-            var counter = 0;
-            for (int i = 0; i < 10; i++)
-            {
-                Console.Clear();
-
-                switch (counter % 4)
+            var linesToPrint =
+                from line in lines
+                let currentIndex = index++
+                where currentIndex > 0 && currentIndex < Console.WindowHeight
+                select new
                 {
-                    case 0:
-                        {
-                            Console.WriteLine("         ╔════╤╤╤╤════╗");
-                            Console.WriteLine("         ║    │││ \\   ║");
-                            Console.WriteLine("         ║    │││  O  ║");
-                            Console.WriteLine("         ║    OOO     ║");
-                            break;
-                        };
-                    case 1:
-                        {
-                            Console.WriteLine("         ╔════╤╤╤╤════╗");
-                            Console.WriteLine("         ║    ││││    ║");
-                            Console.WriteLine("         ║    ││││    ║");
-                            Console.WriteLine("         ║    OOOO    ║");
-                            break;
-                        };
-                    case 2:
-                        {
-                            Console.WriteLine("         ╔════╤╤╤╤════╗");
-                            Console.WriteLine("         ║   / │││    ║");
-                            Console.WriteLine("         ║  O  │││    ║");
-                            Console.WriteLine("         ║     OOO    ║");
-                            break;
-                        };
-                    case 3:
-                        {
-                            Console.WriteLine("         ╔════╤╤╤╤════╗");
-                            Console.WriteLine("         ║    ││││    ║");
-                            Console.WriteLine("         ║    ││││    ║");
-                            Console.WriteLine("         ║    OOOO    ║");
-                            break;
-                        };
-                }
+                    Text = new String(line.Skip(trimLeft).Take(Math.Min(Console.WindowWidth - x, line.Length - trimLeft)).ToArray()),
+                    X = x,
+                    Y = y++
+                };
 
-                counter++;
-                Thread.Sleep(200);
+            Console.Clear();
+            foreach (var line in linesToPrint)
+            {
+                Console.SetCursorPosition(line.X, line.Y);
+                Console.Write(line.Text);
             }
         }
+        static void Animate()
+        {
+            var arr = new[]
+            {
+                    @"                                               88                                       ",
+                    @"                    ,d                         88                                       ",
+                    @"                    88                         88                                       ",
+                    @"        ,adPPYba, MM88MMM ,adPPYba,  ,adPPYba, 88  ,adPPYba, 8b,dPPYba, ,adPPYba,       ",
+                    @"        I8[    **   88   a8P_____88 a8P_____88 88 a8P_____88 88P'   *Y8 I8[    **       ",
+                    @"         `*Y8ba,    88   8PP******* 8PP******* 88 8PP******* 88          `*Y8ba,        ",
+                    @"        aa    ]8I   88,  *8b,   ,aa *8b,   ,aa 88 *8b,   ,aa 88         aa    ]8I       ",
+                    @"        `*YbbdP*'   *Y888 `*Ybbd8*'  `*Ybbd8*' 88  `*Ybbd8*' 88         `*YbbdP*'       ",
+            };
+            Console.WindowWidth = 160;
+            Console.WriteLine("\n\n");
+            var maxLength = arr.Aggregate(0, (max, line) => Math.Max(max, line.Length));
+            var x = Console.BufferWidth / 2 - maxLength / 2;
+            for (int y = -arr.Length; y < Console.WindowHeight + arr.Length; y++)
+            {
+                ConsoleDraw(arr, x, y);
+                Thread.Sleep(100);
+            }
+        }
+
+
+
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
-using System.Diagnostics;
+//using System.Text;
+//using System.IO;
+//using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 
 namespace ConsoleUI
 {
@@ -73,8 +73,6 @@ namespace ConsoleUI
          *  AddGuestsInRaffle() method (see description below)*/
         static void GetUserInfo()
         {
-
-
             string yesOrNo;
 
             do
@@ -85,13 +83,14 @@ namespace ConsoleUI
                 raffleNumber = GenerateRandomNumber();
                 AddGuestsInRaffle(raffleNumber, nameToAdd);
 
-                if (yesOrNo == "yes") continue;
+                if (yesOrNo == "y") continue;
 
                 else if (yesOrNo == "")
                 {
                     yesOrNo = GetUserInput("Do you want to add another name?  ").ToLower();
                     nameToAdd = raffleName;
                     raffleNumber = GenerateRandomNumber();
+
                     foreach (KeyValuePair<int, string> kvp in guests)
                     {
                         if (raffleNumber == kvp.Key)
@@ -102,11 +101,11 @@ namespace ConsoleUI
                     AddGuestsInRaffle(raffleNumber, nameToAdd);
                 }
 
-                else if (yesOrNo == "no") break;
+                else if (yesOrNo == "n") break;
 
                 else
                 {
-                    Console.WriteLine("You have not entered \"yes\" or \"no\", or" +
+                    Console.WriteLine("You have not entered \"y\" or \"n\", or" +
                         " you have entered it incorrectly. No more names will be taken.");
                     break;
                 }
@@ -118,7 +117,7 @@ namespace ConsoleUI
         /*3. Create a method that return an integer and name it GenerateRandomNumber().
          * i. This method should take 2 parameters int min, and int max, This method should return
          *  an integer number between min and max.*/
-        static int GenerateRandomNumber(int min = 1000, int max = 9999)
+        private static int GenerateRandomNumber(int min = 1000, int max = 9999)
         {
             return rdm.Next(min, max);
         }
@@ -127,14 +126,14 @@ namespace ConsoleUI
          *  should take 2 parameters int raffleNumber and string guest.
          * i. Add the raffleNumber and the guest name that you collect from the user and store
          *  them in the guests dictionary that you created.*/
-        static void AddGuestsInRaffle(int raffleNumber, string nameToAdd)
+        private static void AddGuestsInRaffle(int raffleNumber, string nameToAdd)
         {
             guests.Add(raffleNumber, nameToAdd);
         }
 
         /*5. Create a void method and name it PrintGuestsName()
          * i. Use a loop to print the name of all your guests with their assigned raffleNumber.*/
-        static void PrintGuestsName()
+        private static void PrintGuestsName()
         {
             Console.WriteLine();
             foreach (KeyValuePair<int, string> kvp in guests)
@@ -168,6 +167,7 @@ namespace ConsoleUI
             int winnerNumber = GetRaffleNumber();
 
             foreach (KeyValuePair<int, string> kvp in guests)
+
                 if (winnerNumber == kvp.Key)
                 {
                     string winnerName = kvp.Value;
@@ -180,8 +180,8 @@ namespace ConsoleUI
 
 
 
-        // CREDIT for animation: http://newbcoding.blogspot.com/2014/11/drawing-and-animating-ascii-art-in-c.html
-        // CREDIT for ASCII: https://ascii.co.uk/art/steelers
+        // CREDIT for scrolling animation: http://newbcoding.blogspot.com/2014/11/drawing-and-animating-ascii-art-in-c.html
+        // CREDIT for ASCII: https://www.asciiart.eu/holiday-and-events/4th-of-july Eagle holding flag by Joan Stark
         static void ConsoleDraw(IEnumerable<string> lines, int x, int y)
         {
             if (x > Console.WindowWidth) return;
